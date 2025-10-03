@@ -1,0 +1,31 @@
+#выполняли совместно Зеленко и Волобуев
+import pandas as pd
+
+df = pd.DataFrame({
+    'Альтернатива': ['iPad Air', 'Samsung Galaxy S8', 'Xiaomi Pad 6'],
+    'Цена': [90, 85, 55],
+    'Батарея': [15, 12, 10],
+    'Производительность': [9, 8, 7],
+    'Вес': [0.6, 0.5, 0.7]
+})
+
+weights = [0.4, 0.3, 0.2, 0.1]
+
+df_norm = df.copy()
+df_norm['Цена_norm'] = (df['Цена'].max() - df['Цена']) / (df['Цена'].max() - df['Цена'].min())
+df_norm['Батарея_norm'] = (df['Батарея'] - df['Батарея'].min()) / (df['Батарея'].max() - df['Батарея'].min())
+df_norm['Производительность_norm'] = (df['Производительность'] - df['Производительность'].min()) / (df['Производительность'].max() - df['Производительность'].min())
+df_norm['Вес_norm'] = (df['Вес'].max() - df['Вес']) / (df['Вес'].max() - df['Вес'].min())
+
+df_norm['Цена_взвеш'] = df_norm['Цена_norm'] * weights[0]
+df_norm['Батарея_взвеш'] = df_norm['Батарея_norm'] * weights[1]
+df_norm['Производительность_взвеш'] = df_norm['Производительность_norm'] * weights[2]
+df_norm['Вес_взвеш'] = df_norm['Вес_norm'] * weights[3]
+
+df_norm['Интегральная_оценка'] = df_norm['Цена_взвеш'] + df_norm['Батарея_взвеш'] + df_norm['Производительность_взвеш'] + df_norm['Вес_взвеш']
+
+df_ranking = df_norm[['Альтернатива', 'Интегральная_оценка']].sort_values('Интегральная_оценка', ascending=False)
+df_ranking['Ранг'] = range(1, len(df_ranking) + 1)
+
+print(df_ranking.round(3))
+print(f"\nЛучший выбор: {df_ranking.iloc[0]['Альтернатива']}")
